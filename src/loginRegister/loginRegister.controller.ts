@@ -8,6 +8,7 @@ export const registerController = async (req: Request, res: Response) => {
       name,
       email,
       password,
+      photoUrl: req.file?.path || '',
     });
     res.status(201).json({
       success: true,

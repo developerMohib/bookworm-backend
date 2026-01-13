@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 
 interface IUser {
   name: string;
@@ -7,6 +7,7 @@ interface IUser {
   photo: string;
   role: 'user' | 'admin';
 }
+export type IUserDocument = IUser  & { _id: Types.ObjectId };
 
 const userSchema = new Schema(
   {
