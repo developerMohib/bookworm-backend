@@ -11,6 +11,7 @@ cloudinary.v2.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary.v2,
   params: async (req: Request, file: Express.Multer.File) => {
+    console.log('filre',file)
     return {
       folder: 'bookworm',
       allowed_formats: ['jpg', 'png', 'jpeg'],

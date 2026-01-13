@@ -3,10 +3,11 @@ import {
   loginController,
   registerController,
 } from '../loginRegister/loginRegister.controller';
+import upload from '../middlewares/upload.middleware';
 
 const router = Router();
 
-router.post('/register', registerController);
+router.post('/register', upload.single('photoUrl') ,registerController);
 router.post('/login', loginController);
 
 const modules_Routes = [

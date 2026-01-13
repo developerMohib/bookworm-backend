@@ -21,8 +21,8 @@ export const registerService = async ({
   photoUrl,
 }: RegisterPayload) => {
   // default avatar
-  photoUrl = 'https://www.w3schools.com/howto/img_avatar.png';
-
+  // photoUrl = 'https://www.w3schools.com/howto/img_avatar.png';
+console.log(25, {name, email, password, photoUrl})
   // hash password
   const hashedPassword = await hashingPassword(password);
 

@@ -4,12 +4,15 @@ import { loginService, registerService } from './loginReginster.service';
 export const registerController = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
+    const image = req.file?.path;
     const user = await registerService({
       name,
       email,
       password,
       photoUrl: req.file?.path || '',
     });
+    
+console.log(14, {name, email, password, image})
     res.status(201).json({
       success: true,
       message: 'Account created successfully',
@@ -48,6 +51,7 @@ export const loginController = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
+      message: 'Login Successfully',
       data: {
         id: user._id,
         name: user.name,

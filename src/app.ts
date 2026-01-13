@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/health', (_req, res) => {
+app.get('/', (_req, res) => {
   res.json({ status: 'Server is running' });
 });
 
