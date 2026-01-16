@@ -1,7 +1,7 @@
 import config from '../config';
-import User from '../modules/users/model/user.model';
-import { comparingPassword, hashingPassword } from '../utils/hashing.password';
+import User from '../modules/users/user.model';
 import jwt from 'jsonwebtoken';
+import { comparingPassword, hashingPassword } from '../utils/hashing.password';
 
 interface RegisterPayload {
   name: string;
@@ -49,13 +49,13 @@ export const loginService = async ({ email, password }: LoginPayload) => {
     throw new Error('INVALID_CREDENTIALS');
   }
 
-  if (!config.jwt.secret || !config.jwt.expiresIn) {
+  if (!config.jwt_secret || !config.jwt_expiresIn) {
     throw new Error('JWT_CONFIG_MISSING');
   }
 
   const token = jwt.sign(
     { id: user._id.toString(), role: user.role },
-    config.jwt.secret,
+    config.jwt_secret,
     { expiresIn: '7d' },
   );
 

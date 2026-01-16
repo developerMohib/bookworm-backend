@@ -1,6 +1,6 @@
 // src/controllers/reviewController.ts
 import { Request, Response } from 'express';
-import { IUserDocument } from '../users/model/user.model';
+import { IUserDocument } from '../users/user.model';
 import reviewModel from './review.model';
 
 // Extend Request to include user (from auth middleware)

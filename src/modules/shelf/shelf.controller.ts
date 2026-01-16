@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import shelfModel from './shelf.model';
 
-exports.addToShelf = async (req: Request, res: Response) => {
+export const addToShelf = async (req: Request, res: Response) => {
   const { bookId, status, progress = 0 } = req?.body;
   const userId = req?.user?._id;
   if (!userId) {
