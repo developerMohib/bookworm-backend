@@ -60,3 +60,13 @@ export const loginService = async ({ email, password }: LoginPayload) => {
     token,
   };
 };
+
+export const getPresentUserServices = async ({ userId }: { userId: string }) => {
+  const user = await User.findById(userId).select('-password').lean();
+
+  if (!user) {
+    throw new Error('USER_NOT_FOUND');
+  }
+
+  return user;
+};

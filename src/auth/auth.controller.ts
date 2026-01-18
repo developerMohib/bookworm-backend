@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
-import { loginService, registerService } from './auth.services';
+import {
+  getPresentUserServices,
+  loginService,
+  registerService,
+} from './auth.services';
 import { uploadToCloudinary } from '../middlewares/upload.middleware';
+import { AuthRequest } from '../types/AuthRequest';
 
 export const registerController = async (req: Request, res: Response) => {
   try {
@@ -94,7 +99,53 @@ export const loginController = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = (req: Request, res: Response) => {
+export const getPresentUserController = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        message: 'Not authenticated',
+      });
+      return;
+    }
+
+    const user = await getPresentUserServices({ userId });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        photo: user.photo || null,
+      },
+    });
+    return;
+  } catch (error: any) {
+    console.error('Get user error:', error);
+
+    if (error.message === 'USER_NOT_FOUND') {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+      return;
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user',
+    });
+    return;
+  }
+};
+
+export const logoutController = (req: Request, res: Response) => {
   res.clearCookie('token');
-  res.json({ success: true });
+  res.status(200).json({
+    success: true,
+    message: 'Logged out successfully',
+  });
 };

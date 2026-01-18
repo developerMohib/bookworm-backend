@@ -1,21 +1,16 @@
 // src/controllers/reviewController.ts
 import { Request, Response } from 'express';
-import { IUserDocument } from '../users/user.model';
 import reviewModel from './review.model';
 
-// Extend Request to include user (from auth middleware)
-interface AuthRequest extends Request {
-  user: IUserDocument;
-}
 
 // Create a new review (user only)
-export const createReview = async (req: AuthRequest, res: Response) => {
+export const createReview = async (req: Request, res: Response) => {
   const { bookId, rating, comment }: { bookId: string; rating: number; comment: string } = req.body;
 
   try {
     const review = await reviewModel.create({
       book: bookId,
-      user: req.user._id,
+      user: req?.user?.id,
       rating,
       comment,
       approved: false, // pending approval
