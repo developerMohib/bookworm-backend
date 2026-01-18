@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { upload } from '../middlewares/upload.middleware';
 import { loginController, registerController } from '../auth/auth.controller';
+import { upload } from '../middlewares/upload.middleware';
 
 const router = Router();
 
-router.post('/register', upload.single('photoUrl'), registerController);
+router.post('/register',  upload.single('image'), registerController);
 router.post('/login', loginController);
 
 const modules_Routes = [

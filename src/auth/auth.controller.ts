@@ -1,18 +1,29 @@
 import { Request, Response } from 'express';
 import { loginService, registerService } from './auth.services';
+import { uploadToCloudinary } from '../middlewares/upload.middleware';
 
 export const registerController = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
-    const image = req.file?.path;
+    let photoUrl = '';
+    if (!req.file) {
+      res.status(400).send('No file');
+      return;
+    }
+    if (req.file) {
+      const cloudinaryResult = await uploadToCloudinary(
+        req.file.buffer,
+        'bookworm', // folder name
+      );
+      photoUrl = cloudinaryResult.url;
+    }
+
     const user = await registerService({
       name,
       email,
       password,
-      photoUrl: req.file?.path || '',
+      photoUrl: photoUrl || '',
     });
-    
-console.log(14, {name, email, password, image})
     res.status(201).json({
       success: true,
       message: 'Account created successfully',

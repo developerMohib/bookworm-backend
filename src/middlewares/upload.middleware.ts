@@ -1,65 +1,56 @@
 import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import config from '../config';
 
-const allowedMimeTypes = [
-  'image/png',
-  'image/jpg',
-  'image/jpeg',
-  'image/gif',
-  'application/pdf',
-];
+cloudinary.config({
+  cloud_name: config.cloud_name,
+  api_key: config.cloud_apikey,
+  api_secret: config.cloud_apisecret,
+});
 
-// use memory storage instead of cloudinary direct storage
 const storage = multer.memoryStorage();
-
 export const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    if (allowedMimeTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(
-        new Error('Only .png, .jpg, .jpeg, .gif, and .pdf files are allowed!'),
-      );
-    }
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
   },
 });
 
-/**
- * 
- * 
- import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import cloudinary from 'cloudinary' ;
-import multer from 'multer';
+export const uploadToCloudinary = async (
+  buffer: Buffer,
+  originalFileName: string,
+  folder: string = 'bookworm',
+): Promise<{ url: string; publicId: string }> => {
+  try {
+    const base64Data = buffer.toString('base64');
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary.v2,
-  params: async (req: Request, file: Express.Multer.File) => {
-    console.log('filre',file)
+    // Extract filename without extension
+    const fileNameWithoutExt = originalFileName.replace(/\.[^/.]+$/, '');
+    // Get file extension
+    const fileExtension = originalFileName.split('.').pop() || '';
+    // Create timestamp
+    const timestamp = Date.now();
+    // Create unique filename with timestamp
+    const uniqueFileName = `${fileNameWithoutExt}_${timestamp}.${fileExtension}`;
+    const result = await cloudinary.uploader.upload(
+      `data:image/jpeg;base64,${base64Data}`,
+      {
+        folder,
+        resource_type: 'auto',
+        public_id: uniqueFileName, 
+        transformation: [
+          { width: 500, height: 500, crop: 'limit' },
+          { quality: 'auto' },
+          { fetch_format: 'auto' },
+        ],
+      },
+    );
     return {
-      folder: 'bookworm',
-      allowed_formats: ['jpg', 'png', 'jpeg'],
-      public_id: `${Date.now()}_${file.originalname.split('.')[0]}`,
+      url: result.secure_url,
+      publicId: result.public_id,
     };
-  },
-});
-
-
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed!'));
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    throw error;
   }
 };
-
-const upload = multer({ storage, fileFilter });
-export default upload;
-
-
- */

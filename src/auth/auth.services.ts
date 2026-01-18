@@ -20,9 +20,6 @@ export const registerService = async ({
   password,
   photoUrl,
 }: RegisterPayload) => {
-  // default avatar
-  // photoUrl = 'https://www.w3schools.com/howto/img_avatar.png';
-console.log(25, {name, email, password, photoUrl})
   // hash password
   const hashedPassword = await hashingPassword(password);
 
@@ -39,7 +36,6 @@ console.log(25, {name, email, password, photoUrl})
 export const loginService = async ({ email, password }: LoginPayload) => {
   const user = await User.findOne({ email }).select('+password');
 
-  console.log('41', user);
   if (!user) {
     throw new Error('INVALID_CREDENTIALS');
   }
