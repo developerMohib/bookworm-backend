@@ -35,9 +35,8 @@ export const registerService = async ({
 
 export const loginService = async ({ email, password }: LoginPayload) => {
   const user = await User.findOne({ email }).select('+password');
-
   if (!user) {
-    throw new Error('INVALID_CREDENTIALS');
+    return null;
   }
 
   const isMatch = await comparingPassword(password, user.password);

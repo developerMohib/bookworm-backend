@@ -57,8 +57,14 @@ export const registerController = async (req: Request, res: Response) => {
 export const loginController = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const { user, token } = await loginService({ email, password });
-
+    const authData = await loginService({ email, password });
+    if (!authData) {
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this email. Please sign up first.',
+      });
+    }
+    const { user, token } = authData;
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
